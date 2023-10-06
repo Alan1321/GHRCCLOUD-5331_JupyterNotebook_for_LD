@@ -8,49 +8,37 @@ from IPython.display import display
 from IPython.display import clear_output
 import ipywidgets as widgets  # Import ipywidgets
 
-# Renders dropdowns
-def drop_down(options=DATASETS, value=None, id='name', metadata={}):
+#renders dropdowns 
+def drop_down(options=DATASETS, value=None , _id='name', metadata={}):
+
+    if _id == 'name':
+        print("Select a dataset from the options below: ", end="")
+
+    output = widgets.Output()
     dropdown = None
     # Create the dropdown widget
-    if value is not None:
+    if value != None:
         dropdown = widgets.Dropdown(options=options, description='', value=value)
     else:
         dropdown = widgets.Dropdown(options=options, description='', value=None)
     # Define a function to handle the dropdown's value change
     def handle_dropdown_change(change):
-        selected_option = change.new
-        handle_dataset_input(options, selected_option, id, metadata=metadata)
+        with output:
+            clear_output()
+            selected_option = change.new
+            handle_dataset_input(options, selected_option, _id, metadata=metadata)
     # Attach the function to the dropdown's value change event
     dropdown.observe(handle_dropdown_change, names='value')
     # Display the dropdown widget
-    display(dropdown)
+    display(dropdown, output)
 
 #clears a cell output and re-renders the dropdowns based on metadata
 def clear_cell_and_render(metadata={}):
-    clear_output(wait=True)
-    #rendering name
-    print("Select a dataset from the options below: ", end="")
-    drop_down(metadata['name']['options'], value=metadata['name']['selected_option'], id='name')
-    
-    if metadata.get('arg2') != None:
-        print("Select year: ", end="")
-        drop_down(metadata['arg2']['options'], id='arg2', metadata=metadata, value=metadata['arg2']['selected_option'])
-
-    if metadata.get('arg3') != None:
-        print("Select month: ", end="")
-        drop_down(metadata['arg3']['options'], id='arg3', metadata=metadata, value=metadata['arg3']['selected_option'])
-        
-    if metadata.get('arg4') != None:
-        print("Select day: ", end="")
-        drop_down(metadata['arg4']['options'], id='arg4', metadata=metadata, value=metadata['arg4']['selected_option'])
-        
-    if metadata.get('arg5') != None:
-        print("Select Time/Instrument: ", end="")
-        drop_down(metadata['arg5']['options'], id='arg5', metadata=metadata, value=metadata['arg5']['selected_option'])
+    pass
 
 #input handler for dropdown
-def handle_dataset_input(options, selected_option, id, metadata={}):  
-    metadata = clear_metadata(id, options, selected_option, metadata)
+def handle_dataset_input(options, selected_option, _id, metadata={}):  
+    metadata = clear_metadata(_id, options, selected_option, metadata)
     if metadata['name']['selected_option'] == DATASETS[0]:
         handle_trmm_lis_full(metadata)
     elif metadata['name']['selected_option'] == DATASETS[1]:
@@ -91,7 +79,7 @@ def handle_trmm_lis_seasonal(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select season: ", end="")
-        drop_down(get_key(seasons), id='arg2', metadata=metadata)
+        drop_down(get_key(seasons), _id='arg2', metadata=metadata)
 def handle_trmm_lis_monthly(metadata={}):
     clear_cell_and_render(metadata) 
     #name is already selected, ask for which season now
@@ -100,7 +88,7 @@ def handle_trmm_lis_monthly(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select month: ", end="")
-        drop_down(get_key(months), id='arg2', metadata=metadata)
+        drop_down(get_key(months), _id='arg2', metadata=metadata)
 def handle_trmm_lis_diurnal(metadata={}):
     clear_cell_and_render(metadata) 
     #name is already selected, ask for which season now
@@ -109,7 +97,7 @@ def handle_trmm_lis_diurnal(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select Time: ", end="")
-        drop_down(get_key(diurnal), id='arg2', metadata=metadata)
+        drop_down(get_key(diurnal), _id='arg2', metadata=metadata)
 def handle_trmm_lis_daily(metadata={}):
     clear_cell_and_render(metadata) 
     #name is already selected, ask for which season now
@@ -118,7 +106,7 @@ def handle_trmm_lis_daily(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select day: ", end="")
-        drop_down(get_key(daily), id='arg2', metadata=metadata)
+        drop_down(get_key(daily), _id='arg2', metadata=metadata)
         
 ##################################################Handlers for OTD dataset################################################
 def handle_otd_full(metadata={}):
@@ -132,7 +120,7 @@ def handle_otd_monthly(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select month: ", end="")
-        drop_down(get_key(months), id='arg2', metadata=metadata)
+        drop_down(get_key(months), _id='arg2', metadata=metadata)
 def handle_otd_diurnal(metadata={}):
     clear_cell_and_render(metadata) 
     #name is already selected, ask for which season now
@@ -141,7 +129,7 @@ def handle_otd_diurnal(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select Time: ", end="")
-        drop_down(get_key(diurnal), id='arg2', metadata=metadata)
+        drop_down(get_key(diurnal), _id='arg2', metadata=metadata)
 def handle_otd_daily(metadata={}):
     clear_cell_and_render(metadata) 
     #name is already selected, ask for which season now
@@ -150,7 +138,7 @@ def handle_otd_daily(metadata={}):
         visualize_COG(BASE_URL+url)
     else:
         print("Select day: ", end="")
-        drop_down(get_key(daily), id='arg2', metadata=metadata)
+        drop_down(get_key(daily), _id='arg2', metadata=metadata)
 ###################################################Handlers for isslis, nalma and hs3######################################
 def handle_isslis(metadata={}):
     clear_cell_and_render(metadata)
@@ -159,25 +147,25 @@ def handle_isslis(metadata={}):
         print("Select year: ", end="")
         response = requests.get(f"{base_url}arg1?name={dataset_name}")
         response = json.loads(response.text)
-        drop_down(response, id='arg2', metadata=metadata)
+        drop_down(response, _id='arg2', metadata=metadata)
     else:
         if metadata.get('arg3') == None:
             print("Select month: ", end="")
             response = requests.get(f"{base_url}arg2?name={dataset_name}&year={metadata['arg2']['selected_option']}")
             response = json.loads(response.text)
-            drop_down(response, id='arg3', metadata=metadata)
+            drop_down(response, _id='arg3', metadata=metadata)
         else:
             if metadata.get('arg4') == None:
                 print("Select day: ", end="")
                 response = requests.get(f"{base_url}arg3?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}")
                 response = json.loads(response.text)
-                drop_down(response, id='arg4', metadata=metadata)
+                drop_down(response, _id='arg4', metadata=metadata)
             else:
                 if metadata.get('arg5') == None:
                     print("Select Time/Instrumnet: ", end="")
                     response = requests.get(f"{base_url}arg4?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}&day={metadata['arg4']['selected_option']}")
                     response = json.loads(response.text)
-                    drop_down(response, id='arg5', metadata=metadata)
+                    drop_down(response, _id='arg5', metadata=metadata)
                 else:
                     year = metadata['arg2']['selected_option']
                     month = metadata['arg3']['selected_option']
@@ -193,25 +181,25 @@ def handle_nalma(metadata={}):
         print("Select year: ", end="")
         response = requests.get(f"{base_url}arg1?name={dataset_name}")
         response = json.loads(response.text)
-        drop_down(response, id='arg2', metadata=metadata)
+        drop_down(response, _id='arg2', metadata=metadata)
     else:
         if metadata.get('arg3') == None:
             print("Select month: ", end="")
             response = requests.get(f"{base_url}arg2?name={dataset_name}&year={metadata['arg2']['selected_option']}")
             response = json.loads(response.text)
-            drop_down(response, id='arg3', metadata=metadata)
+            drop_down(response, _id='arg3', metadata=metadata)
         else:
             if metadata.get('arg4') == None:
                 print("Select day: ", end="")
                 response = requests.get(f"{base_url}arg3?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}")
                 response = json.loads(response.text)
-                drop_down(response, id='arg4', metadata=metadata)
+                drop_down(response, _id='arg4', metadata=metadata)
             else:
                 if metadata.get('arg5') == None:
                     print("Select Time/Instrumnet: ", end="")
                     response = requests.get(f"{base_url}arg4?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}&day={metadata['arg4']['selected_option']}")
                     response = json.loads(response.text)
-                    drop_down(response, id='arg5', metadata=metadata)
+                    drop_down(response, _id='arg5', metadata=metadata)
                 else:
                     year = metadata['arg2']['selected_option']
                     month = metadata['arg3']['selected_option']
@@ -219,7 +207,7 @@ def handle_nalma(metadata={}):
                     arg4 = metadata['arg5']['selected_option']
                     arg4 = arg4.split("_")
                     url = f"NALMA_{arg4[0]}/{year}{month}{day}/{arg4[1]}"+"/{z}/{x}/{y}.png?colormap=terrain&stretch_range=[0,1]"
-                    visualize_COG(BASE_URL+url)
+                    visualize_COG(BASE_URL+url, zoom=7, center={"lat": 33.5206608, "lon": -86.8024900})
 
 def handle_hs3(metadata={}):
     clear_cell_and_render(metadata)
@@ -228,25 +216,25 @@ def handle_hs3(metadata={}):
         print("Select year: ", end="")
         response = requests.get(f"{base_url}arg1?name={dataset_name}")
         response = json.loads(response.text)
-        drop_down(response, id='arg2', metadata=metadata)
+        drop_down(response, _id='arg2', metadata=metadata)
     else:
         if metadata.get('arg3') == None:
             print("Select month: ", end="")
             response = requests.get(f"{base_url}arg2?name={dataset_name}&year={metadata['arg2']['selected_option']}")
             response = json.loads(response.text)
-            drop_down(response, id='arg3', metadata=metadata)
+            drop_down(response, _id='arg3', metadata=metadata)
         else:
             if metadata.get('arg4') == None:
                 print("Select day: ", end="")
                 response = requests.get(f"{base_url}arg3?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}")
                 response = json.loads(response.text)
-                drop_down(response, id='arg4', metadata=metadata)
+                drop_down(response, _id='arg4', metadata=metadata)
             else:
                 if metadata.get('arg5') == None:
-                    print("Select Time/Instrumnet: ", end="")
+                    print("Select Time/Instrument: ", end="")
                     response = requests.get(f"{base_url}arg4?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}&day={metadata['arg4']['selected_option']}")
                     response = json.loads(response.text)
-                    drop_down(response, id='arg5', metadata=metadata)
+                    drop_down(response, _id='arg5', metadata=metadata)
                 else:
                     year = metadata['arg2']['selected_option']
                     month = metadata['arg3']['selected_option']

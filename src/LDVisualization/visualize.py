@@ -6,11 +6,9 @@ import pandas as pd
 import requests
 
 #this function visualized any given COG inside of a mapbox view
-def visualize_COG(layer_url, zoom=None):
-    pio.renderers.default = 'notebook'
-    # pio.renderers.default = 'jupyterlab'
-    # pio.renderers.default = 'colab'
-
+def visualize_COG(layer_url, zoom=1, center={"lat": 33.543682, "lon": -86.779633}):
+    pio.renderers.default = 'iframe'
+    style = "open-street-map"
     # seed value, for mapbox to load in colab
     df = pd.DataFrame([[1001, 5.3],[1001, 5.3]])
     df.columns = ["flips", "unemp"]
@@ -19,9 +17,10 @@ def visualize_COG(layer_url, zoom=None):
                                 color='unemp',
                                 color_continuous_scale="Viridis",
                                 range_color=(0, 12),
-                                mapbox_style="carto-positron",
-                                zoom=4, center = {"lat": 33.543682, "lon": -86.779633},
-                                opacity=0.5,
+                                mapbox_style=style,
+                                center=center,
+                                opacity=1,
+                                zoom=zoom 
                               )
     fig.update_layout(
         mapbox_layers=[
@@ -31,6 +30,6 @@ def visualize_COG(layer_url, zoom=None):
             }
           ])
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    fig.update_layout(mapbox_style="stamen-terrain")
-    fig.layout.mapbox.zoom = 1
+    fig.update_layout(mapbox_style=style)
+    fig.layout.mapbox.zoom = zoom
     fig.show()
