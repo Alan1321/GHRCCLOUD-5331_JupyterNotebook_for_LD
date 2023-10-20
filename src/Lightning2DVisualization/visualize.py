@@ -8,7 +8,16 @@ import requests
 #this function visualized any given COG inside of a mapbox view
 def visualize_COG(layer_url, zoom=1, center={"lat": 33.543682, "lon": -86.779633}):
     pio.renderers.default = 'iframe'
-    style = "white-bg"
+    styles_list = [
+        "carto-darkmatter",
+        "carto-positron",
+        "open-street-map",
+        "stamen-terrain",
+        "stamen-toner",
+        "stamen-watercolor",
+        "white-bg"
+    ]
+    style = styles_list[1]
     # seed value, for mapbox to load in colab
     df = pd.DataFrame([[1001, 5.3],[1001, 5.3]])
     df.columns = ["flips", "unemp"]
@@ -23,20 +32,12 @@ def visualize_COG(layer_url, zoom=1, center={"lat": 33.543682, "lon": -86.779633
                                 zoom=zoom 
                               )
     fig.update_layout(
-        mapbox_style="white-bg",
         mapbox_layers=[
             {
-                "below": 'traces',
                 "sourcetype": "raster",
-                "sourceattribution": "United States Geological Survey",
-                "source": ["https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"]
-            },
-            {
-                "sourcetype": "raster",
-                "sourceattribution": "Government of Canada",
-                "source": [layer_url],
+                "source": [layer_url]
             }
-        ])
+          ])
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     fig.update_layout(mapbox_style=style)
     fig.layout.mapbox.zoom = zoom

@@ -162,7 +162,7 @@ def handle_isslis(metadata={}):
                 drop_down(response, _id='arg4', metadata=metadata)
             else:
                 if metadata.get('arg5') == None:
-                    print("Select Time/Instrumnet: ", end="")
+                    print("Select Time/Instrument: ", end="")
                     response = requests.get(f"{base_url}arg4?name={dataset_name}&year={metadata['arg2']['selected_option']}&month={metadata['arg3']['selected_option']}&day={metadata['arg4']['selected_option']}")
                     response = json.loads(response.text)
                     drop_down(response, _id='arg5', metadata=metadata)
